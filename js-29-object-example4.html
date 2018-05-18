@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>轮播图函数</title>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		li{
+			list-style: none;
+		}
+		.leftBtn{
+			width: 50px;
+			height: 50px;
+			background: grey;
+			position: absolute;
+			top: 220px;
+			left: 0px;
+			text-align: center;
+			font-size: 20px;
+			color: #fff;
+			line-height: 50px;
+			cursor: pointer;
+		}
+		.rightBtn{
+			width: 50px;
+			height: 50px;
+			background: grey;
+			position: absolute;
+			top: 220px;
+			right: 0px;
+			text-align: center;
+			font-size: 20px;
+			color: #fff;
+			line-height: 50px;
+			cursor: pointer;
+		}
+		.bottomBtn{
+			position: absolute;
+			bottom: 10px;
+			left: 50%;
+		}
+		.bottomBtn li{
+			height: 20px;
+			width: 20px;
+			border-radius: 50%;
+			border: 1px solid #000;
+			float: left;
+			margin-left: 10px;
+			background: rgba(0,0,0,0.5);
+			cursor: pointer;
+		}
+		 .bottomBtn .active{
+			background:red;
+		}
+	</style>
+	
+</head>
+<body>
+	<div id="div1"></div>
+</body>
+	<script type="text/javascript">
+		function Carousel (option){
+			this.oBox = document.getElementById(option.id);
+			this.oImgUl = null;
+			this.aImg = option.aImg;
+			this.width = option.width;
+			this.height = option.height;
+			this.leftBtn =null;
+			this.rightBtn =null;
+			this.bottomBtn = null;
+			this.now =0;
+			this.timer= null;
+			this.init();
+			this.bindEvent();
+
+		}
+		Carousel.prototype.init = function (){
+			this.oBox.style.width = this.width +'PX';
+			this.oBox.style.height = this.height +'PX';
+			this.oBox.style.position= 'relative';
+			this.oImgUl = document.createElement('ul');
+			for(var i=0;i<this.aImg.length;i++){
+				var oLi =document.createElement('li');
+				var oImg = document.createElement('img');
+				oLi.style.position = 'absolute';
+				oLi.style.top= 0;
+				oLi.style.left= 0;
+				if(i ==0 ){
+					oLi.style.opacity = 1;
+					oLi.style.zIndex = 50;
+				}
+				else{
+					oLi.style.opacity = 0.5;
+					oLi.style.zIndex = 1;
+				}
+				oImg.style.width= this.width +'px';
+				oImg.style.height = this.height +'px';
+				oImg.src = this.aImg[i];
+				oLi.appendChild(oImg);
+				this.oImgUl.appendChild(oLi);
+			}
+			this.leftBtn = document.createElement('span');
+			this.rightBtn = document.createElement('span');
+			this.leftBtn.className = 'leftBtn';
+			this.rightBtn.className = 'rightBtn';
+			this.leftBtn.style.zIndex=999;
+			this.rightBtn.style.zIndex =999;
+			this.leftBtn.innerHTML ='&lt;';
+			this.rightBtn.innerHTML = '&gt;';
+			this.bottomBtn = document.createElement('ul');
+			this.bottomBtn.className = 'bottomBtn';
+			for(var i=0;i<this.aImg.length;i++){
+				var oBottomLi = document.createElement('li');				
+				if(i ==0){
+					oBottomLi.className='active';
+				}
+			this.bottomBtn.appendChild(oBottomLi);
+			}
+			this.bottomBtn.style.zIndex =999;
+			this.oBox.appendChild(this.bottomBtn);
+			this.bottomBtn.style.marginLeft = -this.bottomBtn.offsetWidth *0.5 +'px';
+			console.log(-this.bottomBtn.offsetWidth *0.5);
+			this.oBox.appendChild(this.leftBtn);
+			this.oBox.appendChild(this.rightBtn);
+			
+			this.oBox.appendChild(this.oImgUl);
+		}
+		Carousel.prototype.Tab = function(){
+			for(var i=0 ;i<this.oImgUl.children.length;i++){
+					this.oImgUl.children[i].style.opacity=0;
+					this.oImgUl.children[i].style.zIndex=0;
+					this.bottomBtn.children[i].className='';
+				}
+			this.oImgUl.children[this.now].style.opacity=1;
+			this.oImgUl.children[this.now].style.zIndex = 50;
+			this.bottomBtn.children[this.now].className='active';
+		}
+		Carousel.prototype.bindEvent= function(){
+			this.rightBtn.onclick = function (){
+				/*
+				for(var i=0 ;i<this.oImgUl.children.length;i++){
+					this.oImgUl.children[i].style.opacity=0;
+					this.oImgUl.children[i].style.zIndex=0;
+					this.bottomBtn.children[i].className='';
+				}
+				*/
+				this.now++;
+				if(this.now >= this.oImgUl.children.length){
+					this.now = 0;
+				}
+				/*
+				this.oImgUl.children[this.now].style.opacity=1;
+				this.oImgUl.children[this.now].style.zIndex = 50;
+				this.bottomBtn.children[this.now].className='active';
+				*/
+				this.Tab();
+
+			}.bind(this);
+			this.leftBtn.onclick = function (){
+				/*
+				for(var i=0 ;i<this.oImgUl.children.length;i++){
+					this.oImgUl.children[i].style.opacity=0.5;
+					this.oImgUl.children[i].style.zIndex=0;
+					this.bottomBtn.children[i].className='';
+				}
+				*/
+				this.now--;
+				if(this.now <0){
+					this.now = this.oImgUl.children.length-1;
+				}
+				/*
+				this.oImgUl.children[this.now].style.opacity =1;
+				this.oImgUl.children[this.now].style.zIndex = 50;
+				this.bottomBtn.children[this.now].className='active';
+				*/
+				this.Tab();
+			}.bind(this);
+			var _self =this;
+			for(var i=0;i<this.bottomBtn.children.length;i++){
+				this.bottomBtn.children[i].index =i;
+				//_self.bottomBtn.children[i].className=''
+				this.bottomBtn.children[i].onclick = function(){
+					console.log(1);
+					_self.now =this.index;
+					_self.Tab();
+				}
+			}
+			_self.timer=setInterval(function(){
+				_self.now++;
+				console.log(_self.now);
+				if(_self.now >= _self.oImgUl.children.length){
+					_self.now = 0;
+				}
+				_self.Tab();
+
+			},800)
+			this.oBox.onmouseover = function(){
+				clearInterval (_self.timer);
+			}
+			this.oBox.onmouseout = function(){
+				_self.timer=setInterval(function(){
+				_self.now++;
+				console.log(_self.now);
+				if(_self.now >= _self.oImgUl.children.length){
+					_self.now = 0;
+				}
+				_self.Tab();
+
+			},800)
+			}
+			
+		}
+		new Carousel({
+			id:'div1',
+			aImg:[
+			"images/tu1.png",
+			"images/tu2.jpg",
+			"images/tu3.png",
+			"images/tu4.jpg"],
+			width:700,
+			height:500,
+		});
+	</script>
+</html>
